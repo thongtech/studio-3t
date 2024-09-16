@@ -1,50 +1,46 @@
-# Contributor: Monika Schrenk <moni@random-access.org>
-# Contributor: Alexandre Teles (afterSt0rm) <ateles.1@gmail.com>
-# Contributor: Emanuel Fernandes <efernandes@tektorque.com>
-# Maintainer: Erik Bender <erik.bender@develerik.dev>
-
 pkgname=studio-3t
-pkgver=2023.5.0
+_pkgname=studio-3t
+pkgver=2024.3.1
 pkgrel=1
 pkgdesc="The Professional Client, IDE and GUI for MongoDB"
 arch=('x86_64')
 url="https://studio3t.com"
 license=("custom")
-depends=('gtk2')
-makedepends=('gendesk')
-provides=('studio-3t')
-replaces=('mongochef')
 
-source=("$pkgname-$pkgver.tar.gz::https://download.studio3t.com/studio-3t/linux/${pkgver}/${pkgname}-linux-x64.tar.gz")
-
-sha256sums=('64417f676fc51ccc1c29b81704e460cd9c6d60d7616daf4c65c25315ef56d830')
+_source_filename="${_pkgname}-linux-x64.tar.gz"
+source=("https://download.studio3t.com/studio-3t/linux/${pkgver}/${_source_filename}")
+sha512sums=('0bd40156e6df23ed2d72e8bc8f4057a8ef51dd0f884fde845a1f0257099b5e748b51f8dd2ceb79b775abed0b15143d013fa8ee3961811401806ef03210d658e3')
 
 prepare() {
   # Extract, rename and add execution permision
-  tar xzvf ${pkgname}-${pkgver}.tar.gz && for file in *.sh; do mv "$file" ${pkgname}.sh; done && chmod +x ${pkgname}.sh
+  tar xzvf ${_source_filename} && for file in *.sh; do mv "$file" ${_pkgname}.sh; done && chmod +x ${_pkgname}.sh
 
   # unattended mode
-  sh ./${pkgname}.sh -q -dir ${srcdir}/${pkgname} -overwrite
-
-  # Generate Desktop File
-  cd ${srcdir}
-  gendesk -f -n \
-    --name "Studio 3T" \
-    --pkgname "$pkgname" \
-    --pkgdesc "$pkgdesc" \
-    --categories="Science;Education;Development;Application"
+  sh ./${_pkgname}.sh -q -dir ${srcdir}/${_pkgname} -overwrite
 }
 
 package() {
-  cd ${srcdir}
-  mkdir -p $pkgdir/opt/$pkgname
-  install -Dm644 ${pkgname}/.install4j/Studio-3T.png ${pkgdir}/usr/share/pixmaps/${pkgname}.png
-  cp -R ${pkgname}/. ${pkgdir}/opt/${pkgname}
+    # Copy package files
+    echo "Copying package files..."
+    mkdir -p "${pkgdir}/opt/${_pkgname}"
+    install -Dm644 "${srcdir}/${_pkgname}/.install4j/Studio-3T.png" "${pkgdir}/usr/share/pixmaps/${_pkgname}.png"
+    cp -R ${_pkgname}/. ${pkgdir}/opt/${_pkgname}
 
-  mkdir -p "$pkgdir/usr/bin/"
-  mkdir -p "$pkgdir/usr/share/applications/"
-  mkdir -p "$pkgdir/usr/share/licenses/$pkgname"
+    # Add package to /usr/bin/
+    mkdir -p "${pkgdir}/usr/bin"
+    ln -s "/opt/${_pkgname}/Studio-3T" "${pkgdir}/usr/bin/${_pkgname}"
 
-  ln -s "/opt/$pkgname/Studio-3T" "$pkgdir/usr/bin/$pkgname"
-  install -Dm644 "$pkgname.desktop" "$pkgdir/usr/share/applications/$pkgname.desktop"
+    # Copy .desktop file
+    mkdir -p "${pkgdir}/usr/share/applications"
+    cat << EOF > "${pkgdir}/usr/share/applications/${_pkgname}.desktop"
+[Desktop Entry]
+Type=Application
+Name=Studio 3T
+Comment=${pkgdesc}
+Exec=${_pkgname}
+Icon=${_pkgname}
+Terminal=false
+StartupNotify=false
+Categories=Development;Application;
+EOF
 }
