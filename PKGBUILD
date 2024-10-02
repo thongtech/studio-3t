@@ -1,6 +1,6 @@
 pkgname=studio-3t
 _pkgname=studio-3t
-pkgver=2024.3.1
+pkgver=2024.4.0
 pkgrel=1
 pkgdesc="The Professional Client, IDE and GUI for MongoDB"
 arch=('x86_64')
@@ -9,7 +9,7 @@ license=("custom")
 
 _source_filename="${_pkgname}-linux-x64.tar.gz"
 source=("https://download.studio3t.com/studio-3t/linux/${pkgver}/${_source_filename}")
-sha512sums=('0bd40156e6df23ed2d72e8bc8f4057a8ef51dd0f884fde845a1f0257099b5e748b51f8dd2ceb79b775abed0b15143d013fa8ee3961811401806ef03210d658e3')
+sha256sums=('56541a31034856333c6fdc634f082b8bb8b06eb695931170cfb23378370a297c')
 
 prepare() {
   # Extract, rename and add execution permision
